@@ -20,3 +20,11 @@ Here are the steps to accomplish this:
 - [7. Test the admission controller](docs/7.TEST.md)
 
 Code and docs **heavily** inspired by [grumpy](https://github.com/giantswarm/grumpy)
+
+Some differences:
+
+- Using `k8s.io/api/admission/v1` instead of `k8s.io/api/admission/v1beta`
+- Validating `apps/v1/deployments` instead of `v1/pods`
+- Added `namespaceSelector` in `ValidatingWebhookConfiguration` object to control activation of admission controller in a given namespace
+- Added a Troubleshooting section to show what went wrong during testing
+
