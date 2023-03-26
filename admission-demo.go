@@ -48,17 +48,21 @@ func (gs *AdmissionDemoHandler) serve(w http.ResponseWriter, r *http.Request) {
 		glog.Error("error deserializing deploy")
 		return
 	}
-	if *deploy.Spec.Replicas > 1 {
-		return
+
+	// default response is allowed
+	arResponse := admission.AdmissionReview{
+		TypeMeta: arRequest.TypeMeta,
+		Response: &admission.AdmissionResponse{
+			UID:     arRequest.Request.UID,
+			Allowed: true,
+		},
 	}
 
-	arResponse := admission.AdmissionReview{
-		Response: &admission.AdmissionResponse{
-			Allowed: false,
-			Result: &metav1.Status{
-				Message: "Minimum number of replicats for deployments is 2!",
-			},
-		},
+	if *deploy.Spec.Replicas <= 1 {
+		arResponse.Response.Allowed = false
+		arResponse.Response.Result = &metav1.Status{
+			Message: "Minimum number of replicas for a deployment is 2!",
+		}
 	}
 	resp, err := json.Marshal(arResponse)
 	if err != nil {
